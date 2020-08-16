@@ -74,6 +74,9 @@ func testTreeTraversal() {
   let list2 = inOrderTraveral2(node: node)
   print(list2)
 
+  let list3 = flagInOrderTreeTraversal(node: node)
+  print(list3)
+  
   print("前序： 根 左 右")
   let list4 = preOrderTraveral(node: node)
   print(list4)
@@ -374,4 +377,31 @@ func postOrderTraversal2<T>(node: TreeNode<T>?) -> [T]? {
     current = current?.left
   }
   return result.reversed()
+}
+
+//MARK: - 应付各种遍历操作
+enum VisitState: Int {
+  case none
+  case visited
+}
+// 将访问过的元素进行标记
+func flagInOrderTreeTraversal<T>(node: TreeNode<T>?) -> [T]? {
+  guard let root = node else {
+    return nil
+  }
+  var list = [(VisitState, TreeNode<T>)]()
+  list.append((.none, root))
+  var result = [T]()
+  while !list.isEmpty {
+    let (state, tmp) = list.removeLast()
+    switch state {
+    case .none:
+      tmp.right.map({ list.append((.none, $0)) })
+      list.append((.visited, tmp))
+      tmp.left.map({ list.append((.none, $0)) })
+    default:
+      tmp.value.map({ result.append($0) })
+    }
+  }
+  return result
 }
