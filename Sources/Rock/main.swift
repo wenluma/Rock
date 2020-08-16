@@ -15,5 +15,4 @@ print("Hello, world!")
 //print(list)
 
 testTreeDepth()
-
 testTreeTraversal()

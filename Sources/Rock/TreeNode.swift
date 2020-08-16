@@ -47,6 +47,13 @@ func testTreeDepth() {
 }
 
 func testTreeTraversal() {
+  /*
+                        0
+                 1            2
+               3    4     5      6
+             7  8  9 10 11 12 13  14
+   */
+  print("中序:  左 根 右")
   let source = orderList(lower: 0, upper: 14)
   let node = treeNode(from: source)
 
@@ -58,6 +65,20 @@ func testTreeTraversal() {
   
   let list3 = inOrderTraveral3(node: node)
   print(list3)
+  
+  print("前序： 根 左 右")
+  let list4 = preOrderTraveral(node: node)
+  print(list4)
+  
+  let list5 = preOrderTraveral2(node: node)
+  print(list5)
+  
+  print("后： 左右根")
+  let post = postOrderTraversal(node: node)
+  print(post)
+  
+  let post2 = postOrderTraversal2(node: node)
+  print(post2)
 }
 
 //MARK: - common
@@ -196,6 +217,7 @@ func maxDepthlevel3<T>(root: TreeNode<T>?) -> UInt? {
 }
 
 //MARK: - 遍历
+//MARK: in order
 func inOrderTraversal<T>(node: TreeNode<T>?) -> [T]? {
   guard let node = node else {
     return nil
@@ -261,7 +283,88 @@ func inOrderTraveral3<T>(node: TreeNode<T>?) -> [T]? {
   return result
 }
 
+//MARK: pre order
+func preOrderTraveral<T>(node: TreeNode<T>?) -> [T]? {
+  guard let root = node else {
+    return nil
+  }
+  var list = [T]()
+  _preOrder(node: root, list: &list)
+  return list
+}
 
+private func _preOrder<T>(node: TreeNode<T>, list: inout [T]) {
+  node.value.map { list.append($0) }
+  node.left.map({ _preOrder(node: $0, list: &list) })
+  node.right.map({ _preOrder(node: $0, list: &list) })
+}
 
+func preOrderTraveral2<T>(node: TreeNode<T>?) -> [T]? {
+  /*
+   1. 边界条件
+   2. 变量 current, queue,
+   3. 循环条件
+   */
+  guard let root = node else {
+    return nil
+  }
+  var result = [T]()
+  var queue = [TreeNode<T>]()
+  var current: TreeNode<T>?
+  current = root
+  while current != nil || !queue.isEmpty {
+    current?.value.map({ result.append($0) })
+    current.map({ queue.append($0) })
+    while current != nil {
+      current = current?.left.flatMap({
+        queue.append($0);
+        $0.value.map({ result.append($0) })
+        return $0
+      })
+    }
+    current = queue.removeLast()
+    current = current?.right
+  }
+  return result
+}
 
+//MARK: - post order
+func postOrderTraversal<T>(node: TreeNode<T>?) -> [T]? {
+  guard let root = node else {
+    return nil
+  }
+  var list = [T]()
+  _postOrder(node: root, list: &list)
+  return list
+}
 
+private func _postOrder<T>(node: TreeNode<T>, list: inout [T]) {
+  node.left.map({ _postOrder(node: $0, list: &list) })
+  node.right.map({ _postOrder(node: $0, list: &list) })
+  node.value.map({ list.append($0) })
+}
+
+func postOrderTraversal2<T>(node: TreeNode<T>?) -> [T]? {
+  guard let root = node else {
+    return nil
+  }
+  var queue = [TreeNode<T>]()
+  var result = [T]()
+  var current: TreeNode<T>?
+  current = root
+  while current != nil || !queue.isEmpty {
+    current.map({ queue.append($0) })
+    current?.value.map({ result.append($0) })
+
+    while current != nil {
+      current = current?.right.map({
+        queue.append($0);
+        $0.value.map({ result.append($0) })
+        return $0
+      })
+    }
+    current = queue.removeLast()
+    current = current?.left
+  }
+  return result.reversed()
+}
