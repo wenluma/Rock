@@ -53,30 +53,28 @@ func testTreeTraversal() {
                3    4     5      6
              7  8  9 10 11 12 13  14
    */
+
   print("中序:  左 根 右")
   let source = orderList(lower: 0, upper: 14)
   let node = treeNode(from: source)
 
   let list = inOrderTraversal(node: node)
   print(list)
-  
+
   let list2 = inOrderTraveral2(node: node)
   print(list2)
-  
-  let list3 = inOrderTraveral3(node: node)
-  print(list3)
-  
+
   print("前序： 根 左 右")
   let list4 = preOrderTraveral(node: node)
   print(list4)
-  
+
   let list5 = preOrderTraveral2(node: node)
   print(list5)
-  
+
   print("后： 左右根")
   let post = postOrderTraversal(node: node)
   print(post)
-  
+
   let post2 = postOrderTraversal2(node: node)
   print(post2)
 }
@@ -235,27 +233,26 @@ private func inOrder<T>(node: TreeNode<T>?, list: inout [T]) {
   }
 }
 
-func inOrderTraveral2<T>(node: TreeNode<T>?) -> [T]? {
-  return node.flatMap { (tmp) -> [T]? in
-    var stack = [TreeNode<T>]()
-
-    var result = [T?]()
-    var last: TreeNode<T>?
-    last = tmp
-    while last != nil || !stack.isEmpty {
-      last.map { stack.append($0) }
-      while last != nil {
-        last = last?.left.flatMap { stack.append($0); return $0 }
-      }
-      last = stack.removeLast()
-      last.map { result.append($0.value) }
-      last = last?.right
-    }
-    return result.compactMap{ $0 }
+func inOrderTraveralx<T>(node: TreeNode<T>?) -> [T]? {
+  guard let root = node else {
+    return nil
   }
+  var queue = [TreeNode<T>]()
+  var current: TreeNode<T>? = root
+  var result = [T]()
+  while current != nil || !queue.isEmpty {
+    while current != nil {
+      current.map({ queue.append($0) })
+      current = current?.left
+    }
+    current = queue.removeLast()
+    current?.value.map({ result.append($0) })
+    current = current?.right
+  }
+  return result
 }
 
-func inOrderTraveral3<T>(node: TreeNode<T>?) -> [T]? {
+func inOrderTraveral2<T>(node: TreeNode<T>?) -> [T]? {
   /*
    1. 判断 current ！= nil
    2. current add to list
@@ -272,9 +269,9 @@ func inOrderTraveral3<T>(node: TreeNode<T>?) -> [T]? {
   var current: TreeNode<T>?
   current = root
   while current != nil || !queue.isEmpty {
-    current.map { queue.append($0) }
     while current != nil {
-      current = current?.left.flatMap({ queue.append($0); return $0 })
+      current.map { queue.append($0) }
+      current = current?.left
     }
     current = queue.removeLast()
     current?.value.map { result.append($0) }
