@@ -23,6 +23,16 @@ class TreeNode<T> {
   }
 }
 
+extension TreeNode: Hashable {
+  static func == (lhs: TreeNode<T>, rhs: TreeNode<T>) -> Bool {
+    lhs.hashValue == rhs.hashValue
+  }
+  
+  func hash(into hasher: inout Hasher) {
+    hasher.combine(ObjectIdentifier(self))
+  }
+}
+
 func testTreeDepth() {
   let list = orderList(lower: 0, upper: 14)
   //print(list)
