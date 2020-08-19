@@ -16,3 +16,12 @@ print("Hello, world!")
 
 testTreeDepth()
 testTreeTraversal()
+
+for i in 0...10 {
+  print("i = \(i); \(fib(n: i))")
+}
+
+for i in 1...5 {
+  print("tree1 i \(i) =  \(numTrees(n: i))")
+  print("tree2 i \(i) =  \(numTrees2(n: i))")
+}
