@@ -229,6 +229,22 @@ func maxDepthlevel3<T>(root: TreeNode<T>?) -> UInt? {
 
 //MARK: - 遍历
 //MARK: in order
+// 判断平衡二叉树 left < root < right ,中序有序
+func isBalanceBinaryTree<T>(root: TreeNode<T>?) -> Bool {
+  guard let list = inOrderTraveral2(node: root), !list.isEmpty else {
+    return false
+  }
+  var last: T = list.first
+  for i in 1..<list.count {
+    if last < list[i] {
+      last = list[i]
+    } else {
+      return false
+    }
+  }
+  return true
+}
+
 func inOrderTraversal<T>(node: TreeNode<T>?) -> [T]? {
   guard let node = node else {
     return nil
