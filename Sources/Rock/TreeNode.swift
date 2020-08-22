@@ -6,7 +6,35 @@
 //
 import Foundation
 
-class TreeNode<T> {
+open class TreeFacctory {
+  static public func treeNode<T>(from list:[T] ) -> TreeNode<T>? {
+    if list.isEmpty {
+      return nil
+    }
+    let count = list.count
+    let root = TreeNode(value: list.first, left: nil, right: nil)
+    var queue = [TreeNode<T>]()
+    queue.append(root)
+    
+    stride(from: 1, to: count, by: 2).forEach { (index) in
+      if queue.isEmpty { return }
+      let node = queue.remove(at: 0)
+      if index < count {
+        let tmp = TreeNode(value: list[index])
+        node.left = tmp
+        queue.append(tmp)
+      }
+      if index+1 < count {
+        let tmp = TreeNode(value: list[index+1])
+        node.right = tmp
+        queue.append(tmp)
+      }
+    }
+    return root
+  }
+}
+
+public class TreeNode<T> {
   let value: T?
   var left: TreeNode<T>?
   var right: TreeNode<T>?
@@ -21,14 +49,17 @@ class TreeNode<T> {
   
   deinit {
   }
+  
+  
+
 }
 
 extension TreeNode: Hashable {
-  static func == (lhs: TreeNode<T>, rhs: TreeNode<T>) -> Bool {
+  public static func == (lhs: TreeNode<T>, rhs: TreeNode<T>) -> Bool {
     lhs.hashValue == rhs.hashValue
   }
   
-  func hash(into hasher: inout Hasher) {
+  public func hash(into hasher: inout Hasher) {
     hasher.combine(ObjectIdentifier(self))
   }
 }
@@ -36,7 +67,7 @@ extension TreeNode: Hashable {
 func testTreeDepth() {
   let list = orderList(lower: 0, upper: 14)
   //print(list)
-  let node = treeNode(from: list)
+  let node = TreeFacctory.treeNode(from: list)
 
   printLevel(of: node)
 
@@ -66,7 +97,7 @@ func testTreeTraversal() {
 
   print("中序:  左 根 右")
   let source = orderList(lower: 0, upper: 14)
-  let node = treeNode(from: source)
+  let node = TreeFacctory.treeNode(from: source)
 
   let list = inOrderTraversal(node: node)
   print(list)
@@ -93,33 +124,7 @@ func testTreeTraversal() {
 }
 
 //MARK: - common
-func treeNode<T>(from list:[T] ) -> TreeNode<T>? {
-  if list.isEmpty {
-    return nil
-  }
-  let count = list.count
-  let root = TreeNode(value: list.first, left: nil, right: nil)
-  var queue = [TreeNode<T>]()
-  queue.append(root)
-  
-  stride(from: 1, to: count, by: 2).forEach { (index) in
-    if queue.isEmpty { return }
-    let node = queue.remove(at: 0)
-    if index < count {
-      let tmp = TreeNode(value: list[index])
-      node.left = tmp
-      queue.append(tmp)
-    }
-    if index+1 < count {
-      let tmp = TreeNode(value: list[index+1])
-      node.right = tmp
-      queue.append(tmp)
-    }
-  }
-  return root
-}
-
-func printLevel<T>(of root: TreeNode<T>?) {
+public func printLevel<T>(of root: TreeNode<T>?) {
   root.map { (node) -> Void in
     var queue = [TreeNode<T>]()
     var levelQueue = [TreeNode<T>]()
@@ -138,6 +143,129 @@ func printLevel<T>(of root: TreeNode<T>?) {
     }
   }
 }
+
+//MARK: - 层遍历 level order
+public func levelTraversal<T>(root: TreeNode<T>?) -> [[T]] {
+  guard let root = root else {
+    return []
+  }
+  var queue = [TreeNode<T>]()
+  var result = [[T]]()
+  queue.append(root)
+  while !queue.isEmpty {
+    var size = queue.count
+    var levelArray = [T]()
+    for _ in 0..<size {
+      let node = queue.removeFirst()
+      node.value.map({ levelArray.append($0) })
+      node.left.flatMap({ queue.append($0) })
+      node.right.flatMap({ queue.append($0) })
+    }
+    result.append(levelArray)
+  }
+  return result
+}
+
+
+
+//MARK: -- 判断是否对称的二叉树
+
+func testSymmetric() {
+  /*        1
+        3       3
+      4           4
+   
+   
+            1
+          2    2
+        3  4  4  3
+   */
+  
+//  let list1 = [1, 3, 3, 4, nil, nil, 4]
+//  let tree1 = treeNode(from: list1)
+  
+  let list2 = [1,2,2,3,4,4,3]
+  let tree2: TreeNode<Int>? = TreeFacctory.treeNode(from: list2)
+
+  let list3 = [1,2,2,3,4,4,5]
+  let tree3: TreeNode<Int>? = TreeFacctory.treeNode(from: list3)
+
+//  let check1 = isSymmetric(root: list1)
+  let check2 = isSymmetric(root: tree2)
+  let check3 = isSymmetric(root: tree3)
+  
+//  print("check1 = \(check1)")
+  print("check2 = \(check2)")
+  print("check3 = \(check3)")
+
+}
+
+func isSymmetric<T: Comparable>(root: TreeNode<T>?) -> Bool {
+  guard let root = root else {
+    return false
+  }
+  return _isSymmetric(left: root.left, right: root.right)
+}
+// 递归版本
+private func _isSymmetric<T: Comparable>(left: TreeNode<T>?, right: TreeNode<T>?) -> Bool {
+  if left == nil && right == nil {
+    return true
+  }
+  
+  if left == nil || right == nil {
+    return false
+  }
+  
+  guard let left = left, let right = right, left.value == right.value else {
+    return false
+  }
+  
+  return _isSymmetric(left: left.left, right: right.right) && _isSymmetric(left: left.right, right: right.left)
+}
+
+func isSymmtric2<T: Comparable>(root: TreeNode<T>?) -> Bool {
+  guard let root = root else {
+    return false
+  }
+  
+  func checkSymmetric(left: TreeNode<T>?, right: TreeNode<T>?) -> Bool {
+    if left == nil && right == nil {
+      return true
+    }
+    if left == nil || right == nil {
+      return false
+    }
+    
+    var lq = [TreeNode<T>]()
+    var rq = [TreeNode<T>]()
+    
+    lq.append(left!)
+    rq.append(right!)
+    
+    while !lq.isEmpty {
+      let l = lq.removeFirst()
+      let r = rq.removeFirst()
+      
+      if l.value != r.value {
+        return false
+      }
+      
+      l.left.map({ lq.append($0) })
+      r.right.map({ lq.append($0) })
+      
+      l.right.map({ lq.append($0) })
+      r.left.map({ lq.append($0) })
+
+      if lq.count != rq.count {
+        return false
+      }
+    }
+    return true
+  }
+ 
+  return checkSymmetric(left: root.left, right: root.right)
+}
+
 
 //MARK: -- DFS
 
@@ -230,11 +358,11 @@ func maxDepthlevel3<T>(root: TreeNode<T>?) -> UInt? {
 //MARK: - 遍历
 //MARK: in order
 // 判断平衡二叉树 left < root < right ,中序有序
-func isBalanceBinaryTree<T>(root: TreeNode<T>?) -> Bool {
+func isBalanceBinaryTree<T: Comparable>(root: TreeNode<T>?) -> Bool {
   guard let list = inOrderTraveral2(node: root), !list.isEmpty else {
     return false
   }
-  var last: T = list.first
+  var last: T = list.first!
   for i in 1..<list.count {
     if last < list[i] {
       last = list[i]

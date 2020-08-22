@@ -40,22 +40,22 @@
 //let randomSuit = Suit.random() // → clubs
 //randomSuit.rawValue // → "♣"
 
-func orderList(lower: Int, upper: Int) -> [Int] {
+public func orderList(lower: Int, upper: Int) -> [Int] {
   assert(lower <= upper, "lower <= upper")
   return (lower ... upper).map { $0 }
 }
 
 // 对指定的字符范围，乱序展示
-func randomUnicodeScalar(lower: Unicode.Scalar, upper: Unicode.Scalar) -> [Character] {
+public func randomUnicodeScalar(lower: Unicode.Scalar, upper: Unicode.Scalar) -> [Character] {
   charactersList(lower: lower, upper: upper).shuffled()
 }
 
 // 对指定的字符范围,乱序展示
-func randomIndex(lower: Int, upper: Int) -> [Int] {
+public func randomIndex(lower: Int, upper: Int) -> [Int] {
   return (lower...upper).shuffled()
 }
 
-func randomList<T: FixedWidthInteger>(lower: T, upper: T, count: UInt) -> [T] {
+public func randomList<T: FixedWidthInteger>(lower: T, upper: T, count: UInt) -> [T] {
   var list = [T]()
   for _ in 0..<count {
     list.append(T.random(in: lower...upper))
@@ -64,7 +64,7 @@ func randomList<T: FixedWidthInteger>(lower: T, upper: T, count: UInt) -> [T] {
   return list
 }
 
-func charactersList(lower: Unicode.Scalar = "A", upper: Unicode.Scalar = "Z" ) -> [Character] {
+public func charactersList(lower: Unicode.Scalar = "A", upper: Unicode.Scalar = "Z" ) -> [Character] {
 //  https://stackoverflow.com/questions/26152448/swift-generate-an-array-of-swift-characters
   // 1.
   let unicodeScalarRange: ClosedRange<Unicode.Scalar> = lower ... upper

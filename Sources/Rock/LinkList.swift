@@ -5,7 +5,7 @@
 //  Created by miao gaoliang on 2020/8/16.
 //
 
-class Node<T> {
+public class Node<T> {
   var value: T?
   var next: Node<T>?
   weak var pre: Node<T>?
